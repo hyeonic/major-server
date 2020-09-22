@@ -3,6 +3,7 @@ package com.majorrunner.majorserver.category;
 import com.majorrunner.majorserver.post.Post;
 import com.majorrunner.majorserver.userInfo.UserInfo;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +13,8 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // 생성자를 protected로 두어 생성을 막아둠
+//@NoArgsConstructor(access = AccessLevel.PROTECTED) // 생성자를 protected로 두어 생성을 막아둠
+@Builder
 public class Category {
 
     @Id @GeneratedValue

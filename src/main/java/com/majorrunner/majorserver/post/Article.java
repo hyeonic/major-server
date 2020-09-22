@@ -17,7 +17,7 @@ public class Article {
     protected Article() {
     }
 
-    public Article(String title, String contents, String filePath, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Article(String title, String contents, String filePath) {
         this.title = title;
         this.contents = contents;
         this.filePath = filePath;

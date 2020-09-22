@@ -71,4 +71,13 @@ public class Post {
 
         return post;
     }
+
+    // == 비즈니스 로직 == //
+    public void changeStatus() {
+        if (status.equals(CommentStatus.HIDE)) {
+            status = CommentStatus.SHOW;
+        }else if (status.equals(CommentStatus.SHOW)) {
+            status = CommentStatus.HIDE;
+        }
+    }
 }
