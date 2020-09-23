@@ -3,9 +3,12 @@ package com.majorrunner.majorserver.post;
 import com.majorrunner.majorserver.Like.Like;
 import com.majorrunner.majorserver.comment.Comment;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,22 +20,23 @@ public class PostService {
 
     /** post add */
     @Transactional
-    public Long addPost(Post post) {
+    public Long add(Post post) {
         Post save = postRepository.save(post);
         return post.getId();
     }
 
     /** post 수정 */
     @Transactional
-    public Post updatePost(Post post) {
+    public Post update(Post post) {
         // post 새로 저장
+        post.setUpdatedAt(LocalDateTime.now());
         Post updatedPost = postRepository.save(post);
         return updatedPost;
     }
 
     /** post 삭제 */
     @Transactional
-    public void deletePost(Post post) {
+    public void delete(Post post) {
         postRepository.delete(post);
     }
 
@@ -41,10 +45,17 @@ public class PostService {
         return postRepository.findAll();
     }
 
+    /** post paging */
+    public Page<Post> findAll(Pageable pageable) {
+        return postRepository.findAll(pageable);
+    }
+
     /** post 한건 조회 */
     public Post findOne(Long postId) {
         return postRepository.getOne(postId);
     }
+
+    /** category별로 조회 */
 
     /** 좋아요 수 */
     public int likesNum(Long postId) {
@@ -65,8 +76,10 @@ public class PostService {
     }
 
     /** comment status 변경 */
+    @Transactional
     public void changeCommentType(Post post) {
         post.changeStatus();
+        post.setUpdatedAt(LocalDateTime.now());
         postRepository.save(post);
     }
 }

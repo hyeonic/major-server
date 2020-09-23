@@ -1,5 +1,6 @@
 package com.majorrunner.majorserver.post;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.majorrunner.majorserver.Like.Like;
 import com.majorrunner.majorserver.category.Category;
 import com.majorrunner.majorserver.comment.Comment;
@@ -38,9 +39,11 @@ public class Post {
     private Category category;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Like> likes = new ArrayList<>();
 
     private LocalDateTime createdAt;
@@ -55,6 +58,11 @@ public class Post {
     public void addLikes(Like like) {
         likes.add(like);
         like.setPost(this);
+    }
+
+    public void setCategory(Category category) {
+        category = category;
+        category.getPosts().add(this);
     }
 
     // == 생성 메서드 == //
