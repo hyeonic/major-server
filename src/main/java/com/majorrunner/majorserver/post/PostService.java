@@ -55,8 +55,6 @@ public class PostService {
         return postRepository.getOne(postId);
     }
 
-    /** category별로 조회 */
-
     /** 좋아요 수 */
     public int likesNum(Long postId) {
         Post post = postRepository.getOne(postId);

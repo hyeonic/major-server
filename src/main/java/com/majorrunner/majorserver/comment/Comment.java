@@ -1,5 +1,6 @@
 package com.majorrunner.majorserver.comment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.majorrunner.majorserver.post.Post;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
+    @JsonIgnore
     private Post post;
 
     private LocalDateTime createdAt;

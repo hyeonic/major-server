@@ -1,5 +1,6 @@
 package com.majorrunner.majorserver.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.majorrunner.majorserver.Like.Like;
 import com.majorrunner.majorserver.post.Post;
 import com.majorrunner.majorserver.userInfo.UserInfo;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter  @Setter
@@ -25,6 +27,7 @@ public class User {
     private String email;
     private String password;
     private String nickName;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -32,9 +35,11 @@ public class User {
     private UserInfo userinfo;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Post> posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Like> likes = new ArrayList<>();
 
     // == 연관관계 메서드 == //
