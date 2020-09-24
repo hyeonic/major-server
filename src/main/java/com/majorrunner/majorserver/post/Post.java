@@ -22,8 +22,8 @@ public class Post {
     @Column(name = "post_id")
     private Long id;
 
-    @Embedded
-    private Article article;
+    private String title;
+    private String contents;
 
     @Enumerated(EnumType.STRING)
     private CommentStatus status; // SHOW, HIDE
@@ -61,18 +61,20 @@ public class Post {
     }
 
     public void setCategory(Category category) {
-        category = category;
+        this.category = category;
         category.getPosts().add(this);
     }
 
     // == 생성 메서드 == //
     // 정적 팩토리 메서드
-    public static Post createPost(Article article, CommentStatus commentStatus,
+    public static Post createPost(String title, String contents, CommentStatus commentStatus,
                                   User user, Category category) {
         Post post = new Post();
-        post.setArticle(article);
+        post.setTitle(title);
+        post.setContents(contents);
         post.setStatus(commentStatus);
         post.setUser(user);
+        post.setViews(0);
         post.setCategory(category);
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
@@ -81,6 +83,19 @@ public class Post {
     }
 
     // == 비즈니스 로직 == //
+    public Post updatePost(PostDto postDto, Post post) {
+        post.setTitle(postDto.getTitle());
+        post.setContents(postDto.getContents());
+        post.setStatus(postDto.getCommentStatus());
+        post.setCategory(postDto.getCategory());
+        post.setComments(postDto.getComments());
+        post.setLikes(postDto.getLikes());
+
+        post.setUpdatedAt(LocalDateTime.now());
+
+        return post;
+    }
+
     public void changeStatus() {
         if (status.equals(CommentStatus.HIDE)) {
             status = CommentStatus.SHOW;

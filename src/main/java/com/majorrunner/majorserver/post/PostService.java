@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,11 +28,10 @@ public class PostService {
 
     /** post 수정 */
     @Transactional
-    public Post update(Post post) {
-        // post 새로 저장
-        post.setUpdatedAt(LocalDateTime.now());
-        Post updatedPost = postRepository.save(post);
-        return updatedPost;
+    public void update(PostDto postDto, Post post) {
+
+        post.updatePost(postDto, post);
+        postRepository.save(post);
     }
 
     /** post 삭제 */
@@ -52,7 +52,15 @@ public class PostService {
 
     /** post 한건 조회 */
     public Post findOne(Long postId) {
-        return postRepository.getOne(postId);
+
+        Optional<Post> optionalPost = postRepository.findById(postId);
+
+        if (optionalPost.isPresent()) {
+            return postRepository.getOne(postId);
+        }else {
+            return null;
+        }
+
     }
 
     /** 좋아요 수 */
