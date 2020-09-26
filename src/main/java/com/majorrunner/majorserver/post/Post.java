@@ -103,4 +103,8 @@ public class Post {
             status = CommentStatus.HIDE;
         }
     }
+
+    public void incrementViews() {
+        views += views;
+    }
 }

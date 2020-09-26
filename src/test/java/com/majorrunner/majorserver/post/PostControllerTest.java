@@ -21,6 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.IntStream;
+
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -68,7 +70,7 @@ public class PostControllerTest {
     @Test
     @TestDecription("정상적으로 post를 생성하는 테스트")
     public void createPost() throws Exception {
-        
+
         // Given
         User user = generateUser();
         Category category = generateCategory();
@@ -121,33 +123,39 @@ public class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
-    
+
     @Test
     @TestDecription("정상적인 post를 한 건 조회하는 테스트")
     public void post_한건_조회() throws Exception {
-        
+
         // Given
-        Post generatePost = generatePost(1);
+        User user = generateUser();
+        Category category = generateCategory();
+
+        Post generatePost = generatePost(1, user, category);
 
         // When & Then
         mockMvc.perform(get("/api/posts/{id}", generatePost.getId()))
                 .andDo(print())
                 .andExpect(status().isOk());
-        
+
     }
-    
+
     @Test
     @TestDecription("없는 post를 한 건 조회하는 테스트")
     public void post_한건_조회_404() throws Exception {
 
         // Given
-        Post generatePost = generatePost(1);
+        User user = generateUser();
+        Category category = generateCategory();
+
+        Post generatePost = generatePost(1, user, category);
 
         // When & Then
         mockMvc.perform(get("/api/posts/404"))
                 .andDo(print())
                 .andExpect(status().isNotFound());
-        
+
     }
 
     @Test
@@ -155,7 +163,10 @@ public class PostControllerTest {
     public void updatePost() throws Exception {
 
         // Given
-        Post generatePost = generatePost(1);
+        User user = generateUser();
+        Category category = generateCategory();
+
+        Post generatePost = generatePost(1, user, category);
 
         PostDto postDto = modelMapper.map(generatePost, PostDto.class);
 
@@ -176,7 +187,10 @@ public class PostControllerTest {
     public void updatePost_404() throws Exception {
 
         // Given
-        Post generatePost = generatePost(1);
+        User user = generateUser();
+        Category category = generateCategory();
+
+        Post generatePost = generatePost(1, user, category);
         PostDto postDto = modelMapper.map(generatePost, PostDto.class);
         postDto.setContents("수정되었습니다.");
 
@@ -194,7 +208,10 @@ public class PostControllerTest {
     public void deletePost() throws Exception {
 
         // Given
-        Post generatePost = generatePost(1);
+        User user = generateUser();
+        Category category = generateCategory();
+
+        Post generatePost = generatePost(1, user, category);
 
         // When & Then
         mockMvc.perform(delete("/api/posts/{id}", generatePost.getId()))
@@ -216,10 +233,60 @@ public class PostControllerTest {
 
     }
 
-    private Post generatePost(int index) {
+    @Test
+    @TestDecription("post list를 출력하는 테스트")
+    public void queryPosts() throws Exception {
 
-        User user = this.generateUser();
-        Category category = this.generateCategory();
+        // Given
+        User user = generateUser();
+        Category category = generateCategory();
+        userRepository.save(user);
+        categoryRepository.save(category);
+
+        for (int i = 0; i < 30; i++) {
+            generatePost(i, user, category);
+        }
+
+        // When & Then
+        mockMvc.perform(get("/api/posts")
+                    .param("page", "1")
+                    .param("size", "10")
+                    .param("sort", "createdAt,DESC"))
+                .andDo(print());
+
+    }
+
+    @Test
+    @TestDecription("catgory별 post list를 출력하는 테스트")
+    public void 카페고리별_queryPosts() throws Exception {
+        
+        // Given
+        User user = generateUser();
+        Category category1 = generateCategory();
+        Category category2 = generateCategory2();
+        userRepository.save(user);
+        categoryRepository.save(category1);
+        categoryRepository.save(category2);
+
+        for (int i = 0; i < 15; i++) {
+            generatePost(i, user, category1);
+        }
+
+        for (int i = 0; i < 15; i++) {
+            generatePost(i, user, category2);
+        }
+
+        // When & Then
+        mockMvc.perform(get("/api/posts/category/{id}", category1.getId())
+                .param("page", "1")
+                .param("size", "10")
+                .param("sort", "createdAt,DESC"))
+                .andDo(print());
+        
+    }
+
+
+    private Post generatePost(int index, User user, Category category) {
 
         Post post = Post.createPost(
                 index + "번 게시물",
@@ -241,6 +308,14 @@ public class PostControllerTest {
     }
 
     private Category generateCategory() {
-        return new Category(1L, "전공", "it");
+        Category category = new Category("전공", "it");
+
+        return category;
+    }
+
+    private Category generateCategory2() {
+        Category category = new Category("전공", "소프트웨어");
+
+        return category;
     }
 }

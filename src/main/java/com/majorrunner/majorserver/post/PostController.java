@@ -1,5 +1,7 @@
 package com.majorrunner.majorserver.post;
 
+import com.majorrunner.majorserver.category.Category;
+import com.majorrunner.majorserver.category.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -24,6 +27,7 @@ public class PostController {
     private final ModelMapper modelMapper;
     private final PostRepository postRepository;
     private final PostService postService;
+    private final CategoryRepository categoryRepository;
 
     @PostMapping
     public ResponseEntity createPost(@RequestBody @Valid PostDto postDto) {
@@ -36,6 +40,16 @@ public class PostController {
         URI createdUri = selfLinkBuilder.toUri();
 
         return ResponseEntity.created(createdUri).body(post);
+    }
+
+    @GetMapping()
+    public ResponseEntity queryPosts(Pageable pageable,
+                                     PagedResourcesAssembler<Post> assembler) {
+
+        Page<Post> page = postRepository.findAll(pageable);
+        PagedResources<PostResource> pagedResources = assembler.toResource(page, e -> new PostResource(e));
+
+        return ResponseEntity.ok().body(pagedResources);
     }
 
     @GetMapping("/{id}")
@@ -53,6 +67,22 @@ public class PostController {
         URI createdUri = selfLinkBuilder.toUri();
 
         return ResponseEntity.ok().body(postDto);
+    }
+    
+    @GetMapping("/category/{id}")
+    public ResponseEntity postsByCategory(@PathVariable Long id,
+                                          Pageable pageable) {
+
+        Optional<Category> optionalCategory = categoryRepository.findById(id);
+
+        if (!optionalCategory.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Category category = optionalCategory.get();
+        Page<Post> page = postRepository.findByCategory(category, pageable);
+
+        return ResponseEntity.ok().body(page);
     }
 
     @PutMapping("/{id}")
@@ -84,6 +114,14 @@ public class PostController {
         postService.delete(post);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/views")
+    public void likes(@PathVariable Long id) {
+        Post post = postService.findOne(id);
+        post.incrementViews();
+
+        postRepository.save(post);
     }
 
 }
