@@ -1,7 +1,7 @@
-package com.majorrunner.majorserver.userInfo;
+package com.majorrunner.majorserver.accoutInfo;
 
+import com.majorrunner.majorserver.account.Account;
 import com.majorrunner.majorserver.category.Category;
-import com.majorrunner.majorserver.user.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,15 +14,15 @@ import java.util.List;
 @Entity
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserInfo {
+public class AccountInfo {
 
     @Id @GeneratedValue
-    @Column(name = "user_info_id")
+    @Column(name = "account_info_id")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @OneToMany
     private List<Category> categories = new ArrayList<>();
@@ -34,13 +34,13 @@ public class UserInfo {
 
     // == 생성 메서드 == //
     // 정적 팩토리 메서드
-    public static UserInfo createUserInfo(User user, Category... categories) {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUser(user);
+    public static AccountInfo createUserInfo(Account account, Category... categories) {
+        AccountInfo accountInfo = new AccountInfo();
+        accountInfo.setAccount(account);
         for (Category category : categories) {
-           userInfo.addCategory(category);
+           accountInfo.addCategory(category);
         }
 
-        return userInfo;
+        return accountInfo;
     }
 }

@@ -1,13 +1,13 @@
 package com.majorrunner.majorserver.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.majorrunner.majorserver.account.Account;
 import com.majorrunner.majorserver.category.Category;
 import com.majorrunner.majorserver.category.CategoryRepository;
 import com.majorrunner.majorserver.comment.CommentStatus;
 import com.majorrunner.majorserver.common.TestDecription;
-import com.majorrunner.majorserver.user.User;
-import com.majorrunner.majorserver.user.UserDto;
-import com.majorrunner.majorserver.user.UserRepository;
+import com.majorrunner.majorserver.account.AccountDto;
+import com.majorrunner.majorserver.account.AccountRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.stream.IntStream;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -46,7 +44,7 @@ public class PostControllerTest {
     ModelMapper modelMapper;
 
     @Autowired
-    UserRepository userRepository;
+    AccountRepository userRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -72,19 +70,19 @@ public class PostControllerTest {
     public void createPost() throws Exception {
 
         // Given
-        User user = generateUser();
+        Account account = generateAccount();
         Category category = generateCategory();
 
         PostDto postDto = PostDto.builder()
                 .title("post test")
                 .contents("post test를 위한 contents입니다. ")
                 .commentStatus(CommentStatus.SHOW)
-                .user(user)
+                .account(account)
                 .category(category)
                 .build();
 
         // When
-        userRepository.save(user); // user 등록
+        userRepository.save(account); // user 등록
         categoryRepository.save(category); // category 등록
 
         // Then
@@ -101,18 +99,18 @@ public class PostControllerTest {
     public void title이_비어있는_post() throws Exception {
 
         // Given
-        User user = generateUser();
+        Account account = generateAccount();
         Category category = generateCategory();
 
         PostDto postDto = PostDto.builder()
                 .contents("post test를 위한 contents입니다. ")
                 .commentStatus(CommentStatus.SHOW)
-                .user(user)
+                .account(account)
                 .category(category)
                 .build();
 
         // When
-        userRepository.save(user); // user 등록
+        userRepository.save(account); // user 등록
         categoryRepository.save(category); // category 등록
 
         // Then
@@ -129,10 +127,10 @@ public class PostControllerTest {
     public void post_한건_조회() throws Exception {
 
         // Given
-        User user = generateUser();
+        Account account = generateAccount();
         Category category = generateCategory();
 
-        Post generatePost = generatePost(1, user, category);
+        Post generatePost = generatePost(1, account, category);
 
         // When & Then
         mockMvc.perform(get("/api/posts/{id}", generatePost.getId()))
@@ -146,10 +144,10 @@ public class PostControllerTest {
     public void post_한건_조회_404() throws Exception {
 
         // Given
-        User user = generateUser();
+        Account account = generateAccount();
         Category category = generateCategory();
 
-        Post generatePost = generatePost(1, user, category);
+        Post generatePost = generatePost(1, account, category);
 
         // When & Then
         mockMvc.perform(get("/api/posts/404"))
@@ -163,10 +161,10 @@ public class PostControllerTest {
     public void updatePost() throws Exception {
 
         // Given
-        User user = generateUser();
+        Account account = generateAccount();
         Category category = generateCategory();
 
-        Post generatePost = generatePost(1, user, category);
+        Post generatePost = generatePost(1, account, category);
 
         PostDto postDto = modelMapper.map(generatePost, PostDto.class);
 
@@ -187,10 +185,10 @@ public class PostControllerTest {
     public void updatePost_404() throws Exception {
 
         // Given
-        User user = generateUser();
+        Account account = generateAccount();
         Category category = generateCategory();
 
-        Post generatePost = generatePost(1, user, category);
+        Post generatePost = generatePost(1, account, category);
         PostDto postDto = modelMapper.map(generatePost, PostDto.class);
         postDto.setContents("수정되었습니다.");
 
@@ -208,10 +206,10 @@ public class PostControllerTest {
     public void deletePost() throws Exception {
 
         // Given
-        User user = generateUser();
+        Account account = generateAccount();
         Category category = generateCategory();
 
-        Post generatePost = generatePost(1, user, category);
+        Post generatePost = generatePost(1, account, category);
 
         // When & Then
         mockMvc.perform(delete("/api/posts/{id}", generatePost.getId()))
@@ -238,13 +236,13 @@ public class PostControllerTest {
     public void queryPosts() throws Exception {
 
         // Given
-        User user = generateUser();
+        Account account = generateAccount();
         Category category = generateCategory();
-        userRepository.save(user);
+        userRepository.save(account);
         categoryRepository.save(category);
 
         for (int i = 0; i < 30; i++) {
-            generatePost(i, user, category);
+            generatePost(i, account, category);
         }
 
         // When & Then
@@ -261,19 +259,19 @@ public class PostControllerTest {
     public void 카페고리별_queryPosts() throws Exception {
         
         // Given
-        User user = generateUser();
+        Account account = generateAccount();
         Category category1 = generateCategory();
         Category category2 = generateCategory2();
-        userRepository.save(user);
+        userRepository.save(account);
         categoryRepository.save(category1);
         categoryRepository.save(category2);
 
         for (int i = 0; i < 15; i++) {
-            generatePost(i, user, category1);
+            generatePost(i, account, category1);
         }
 
         for (int i = 0; i < 15; i++) {
-            generatePost(i, user, category2);
+            generatePost(i, account, category2);
         }
 
         // When & Then
@@ -286,13 +284,13 @@ public class PostControllerTest {
     }
 
 
-    private Post generatePost(int index, User user, Category category) {
+    private Post generatePost(int index, Account account, Category category) {
 
         Post post = Post.createPost(
                 index + "번 게시물",
                 "test contents",
                 CommentStatus.SHOW,
-                user,
+                account,
                 category
         );
 
@@ -300,9 +298,9 @@ public class PostControllerTest {
         return postService.findOne(id);
     }
 
-    private User generateUser() {
-        UserDto userDto = new UserDto("user@email.com", "testuser");
-        User user = modelMapper.map(userDto, User.class);
+    private Account generateAccount() {
+        AccountDto userDto = new AccountDto("user@email.com", "testuser");
+        Account user = modelMapper.map(userDto, Account.class);
 
         return user;
     }

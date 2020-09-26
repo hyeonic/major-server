@@ -1,4 +1,4 @@
-package com.majorrunner.majorserver.user;
+package com.majorrunner.majorserver.account;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class AccountDto {
 
     @NotEmpty
     private String email;

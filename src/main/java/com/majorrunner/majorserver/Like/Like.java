@@ -1,7 +1,7 @@
 package com.majorrunner.majorserver.Like;
 
+import com.majorrunner.majorserver.account.Account;
 import com.majorrunner.majorserver.post.Post;
-import com.majorrunner.majorserver.user.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,16 +25,16 @@ public class Like {
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     private LocalDateTime createAt;
 
     // == 생성 메서드 == //
-    public static Like createLike(Post post, User user) {
+    public static Like createLike(Post post, Account account) {
         Like like = new Like();
         like.setPost(post);
-        like.setUser(user);
+        like.setAccount(account);
         like.setCreateAt(LocalDateTime.now());
 
         return like;

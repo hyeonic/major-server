@@ -1,19 +1,11 @@
 package com.majorrunner.majorserver.post;
 
-import com.majorrunner.majorserver.category.Category;
-import com.majorrunner.majorserver.comment.CommentStatus;
-import com.majorrunner.majorserver.user.User;
-import org.junit.Test;
+import com.majorrunner.majorserver.account.User;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

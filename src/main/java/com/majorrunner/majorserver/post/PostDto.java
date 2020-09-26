@@ -1,10 +1,10 @@
 package com.majorrunner.majorserver.post;
 
 import com.majorrunner.majorserver.Like.Like;
+import com.majorrunner.majorserver.account.Account;
 import com.majorrunner.majorserver.category.Category;
 import com.majorrunner.majorserver.comment.Comment;
 import com.majorrunner.majorserver.comment.CommentStatus;
-import com.majorrunner.majorserver.user.User;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
@@ -24,7 +24,7 @@ public class PostDto {
     @NotNull
     private CommentStatus commentStatus;
     @NotNull
-    private User user;
+    private Account account;
     @NotNull
     private Category category;
 

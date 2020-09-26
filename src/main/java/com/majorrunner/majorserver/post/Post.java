@@ -2,10 +2,10 @@ package com.majorrunner.majorserver.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.majorrunner.majorserver.Like.Like;
+import com.majorrunner.majorserver.account.Account;
 import com.majorrunner.majorserver.category.Category;
 import com.majorrunner.majorserver.comment.Comment;
 import com.majorrunner.majorserver.comment.CommentStatus;
-import com.majorrunner.majorserver.user.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,8 +31,8 @@ public class Post {
     private int views;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -68,12 +68,12 @@ public class Post {
     // == 생성 메서드 == //
     // 정적 팩토리 메서드
     public static Post createPost(String title, String contents, CommentStatus commentStatus,
-                                  User user, Category category) {
+                                  Account account, Category category) {
         Post post = new Post();
         post.setTitle(title);
         post.setContents(contents);
         post.setStatus(commentStatus);
-        post.setUser(user);
+        post.setAccount(account);
         post.setViews(0);
         post.setCategory(category);
         post.setCreatedAt(LocalDateTime.now());
