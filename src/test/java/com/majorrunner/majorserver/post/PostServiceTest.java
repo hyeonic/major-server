@@ -1,18 +1,18 @@
-package com.majorrunner.majorserver.post;
-
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
-
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@Transactional
-public class PostServiceTest {
-
-    @Autowired
-    PostService postService;
+//package com.majorrunner.majorserver.post;
+//
+//import org.junit.runner.RunWith;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.boot.test.context.SpringBootTest;
+//import org.springframework.test.context.junit4.SpringRunner;
+//import org.springframework.transaction.annotation.Transactional;
+//
+//@RunWith(SpringRunner.class)
+//@SpringBootTest
+//@Transactional
+//public class PostServiceTest {
+//
+//    @Autowired
+//    PostService postService;
 
 //    @Test
 //    public void post추가() throws Exception {
@@ -82,5 +82,5 @@ public class PostServiceTest {
 //        user.setId(Long.valueOf(index));
 //        return user;
 //    }
-
-}
+//
+//}

@@ -42,7 +42,7 @@ public class PostController {
         return ResponseEntity.created(createdUri).body(post);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity queryPosts(Pageable pageable,
                                      PagedResourcesAssembler<Post> assembler) {
 

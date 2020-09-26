@@ -7,22 +7,34 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class AccountService implements UserDetailsService {
 
-    private final AccountRepository userRepository;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
     public Account saveAccount(Account account) {
-        account.setPassword(this.passwordEncoder.encode(account.getPassword()));
-        return this.userRepository.save(account);
+
+        Set<AccountRole> accountRoles = new HashSet<>();
+        accountRoles.add(AccountRole.USER);
+
+        Account createdAccount = Account.createAccount(account.getUsername(),
+                                                        account.getPassword(),
+                                                        account.getNickName(),
+                                                        accountRoles);
+
+        createdAccount.setPassword(this.passwordEncoder.encode(createdAccount.getPassword()));
+        return accountRepository.save(createdAccount);
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Account account = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
         return new AccountAdapter(account);
     }
 }

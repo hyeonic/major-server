@@ -23,6 +23,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .anonymous()
                 .and()
                 .authorizeRequests()
+                .mvcMatchers(HttpMethod.POST,"/api/account/signup")
+                .permitAll()
                 .mvcMatchers(HttpMethod.GET, "/api/**")
                 .permitAll()
                 .anyRequest()
@@ -30,6 +32,5 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(new OAuth2AccessDeniedHandler());
-
     }
 }

@@ -24,7 +24,7 @@ public class Account {
     @Column(name = "account_id")
     private Long id;
 
-    private String email;
+    private String username;
     private String password;
     private String nickName;
 
@@ -59,9 +59,9 @@ public class Account {
 
     // == 생성 메서드 == //
     // 정적 팩토리 메서드
-    public static Account createAccount(String email, String password, String nickName, Set<AccountRole> roles) {
+    public static Account createAccount(String username, String password, String nickName, Set<AccountRole> roles) {
         Account account = new Account();
-        account.setEmail(email);
+        account.setUsername(username);
         account.setPassword(password);
         account.setNickName(nickName);
         account.setRoles(roles);

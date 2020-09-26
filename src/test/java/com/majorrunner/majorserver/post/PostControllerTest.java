@@ -80,7 +80,7 @@ public class PostControllerTest {
     public void createPost() throws Exception {
 
         // Given
-        Optional<Account> optionalAccount = accountRepository.findByEmail("user@email.com");
+        Optional<Account> optionalAccount = accountRepository.findByUsername("user@email.com");
         Account account = optionalAccount.get();
         Category category = generateCategory();
 
@@ -110,7 +110,7 @@ public class PostControllerTest {
     public void title이_비어있는_post() throws Exception {
 
         // Given
-        Optional<Account> optionalAccount = accountRepository.findByEmail("user@email.com");
+        Optional<Account> optionalAccount = accountRepository.findByUsername("user@email.com");
         Account account = optionalAccount.get();
         Category category = generateCategory();
 
@@ -174,7 +174,7 @@ public class PostControllerTest {
     public void updatePost() throws Exception {
 
         // Given
-        Optional<Account> optionalAccount = accountRepository.findByEmail("user@email.com");
+        Optional<Account> optionalAccount = accountRepository.findByUsername("user@email.com");
         Account account = optionalAccount.get();
         Category category = generateCategory();
         categoryRepository.save(category);
@@ -199,7 +199,7 @@ public class PostControllerTest {
     public void updatePost_404() throws Exception {
 
         // Given
-        Optional<Account> optionalAccount = accountRepository.findByEmail("user@email.com");
+        Optional<Account> optionalAccount = accountRepository.findByUsername("user@email.com");
         Account account = optionalAccount.get();
         Category category = generateCategory();
         categoryRepository.save(category);
@@ -223,7 +223,7 @@ public class PostControllerTest {
     public void deletePost() throws Exception {
 
         // Given
-        Optional<Account> optionalAccount = accountRepository.findByEmail("user@email.com");
+        Optional<Account> optionalAccount = accountRepository.findByUsername("user@email.com");
         Account account = optionalAccount.get();
         Category category = generateCategory();
         categoryRepository.save(category);
@@ -319,7 +319,7 @@ public class PostControllerTest {
     }
 
     private Account generateAccount() {
-        AccountDto userDto = new AccountDto("user@email.com", "testuser");
+        AccountDto.ReadAccountRequest userDto = new AccountDto.ReadAccountRequest("user@email.com", "1234");
         Account user = modelMapper.map(userDto, Account.class);
 
         return user;
