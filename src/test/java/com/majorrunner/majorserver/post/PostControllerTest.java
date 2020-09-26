@@ -1,13 +1,12 @@
 package com.majorrunner.majorserver.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.majorrunner.majorserver.account.Account;
+import com.majorrunner.majorserver.account.*;
 import com.majorrunner.majorserver.category.Category;
 import com.majorrunner.majorserver.category.CategoryRepository;
 import com.majorrunner.majorserver.comment.CommentStatus;
+import com.majorrunner.majorserver.common.AppProperties;
 import com.majorrunner.majorserver.common.TestDecription;
-import com.majorrunner.majorserver.account.AccountDto;
-import com.majorrunner.majorserver.account.AccountRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,15 +15,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.common.util.Jackson2JsonParser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,35 +39,40 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class PostControllerTest {
 
-    @Autowired
-    protected MockMvc mockMvc;
-
-    @Autowired
-    protected ObjectMapper objectMapper;
-
-    @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
-    AccountRepository userRepository;
-
-    @Autowired
-    CategoryRepository categoryRepository;
-
-    @Autowired
-    PostRepository postRepository;
-
-    @Autowired
-    PostService postService;
-
-    @Autowired
-    PostController postController;
+    @Autowired protected MockMvc mockMvc;
+    @Autowired protected ObjectMapper objectMapper;
+    @Autowired ModelMapper modelMapper;
+    @Autowired AccountRepository accountRepository;
+    @Autowired AccountService accountService;
+    @Autowired CategoryRepository categoryRepository;
+    @Autowired PostRepository postRepository;
+    @Autowired PostService postService;
+    @Autowired PostController postController;
+    @Autowired AppProperties appProperties;
 
     @Before
     public void setUp() {
         this.postRepository.deleteAll();
-        this.userRepository.deleteAll();
         this.categoryRepository.deleteAll();
+    }
+
+    private String getBearerToken() throws Exception {
+        return "Bearer " + getAccessToken();
+    }
+
+    private String getAccessToken() throws Exception {
+
+        ResultActions perform = this.mockMvc.perform(post("/oauth/token")
+                .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
+                .param("username", appProperties.getUserUsername())
+                .param("password", appProperties.getUserPassword())
+                .param("grant_type", "password"));
+
+        String responseBody = perform.andReturn().getResponse().getContentAsString();
+        Jackson2JsonParser parser = new Jackson2JsonParser();
+
+        return parser.parseMap(responseBody).get("access_token").toString();
+
     }
 
     @Test
@@ -70,7 +80,8 @@ public class PostControllerTest {
     public void createPost() throws Exception {
 
         // Given
-        Account account = generateAccount();
+        Optional<Account> optionalAccount = accountRepository.findByEmail("user@email.com");
+        Account account = optionalAccount.get();
         Category category = generateCategory();
 
         PostDto postDto = PostDto.builder()
@@ -82,11 +93,11 @@ public class PostControllerTest {
                 .build();
 
         // When
-        userRepository.save(account); // user 등록
         categoryRepository.save(category); // category 등록
 
         // Then
         mockMvc.perform(post("/api/posts")
+                    .header(HttpHeaders.AUTHORIZATION, getBearerToken())
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .accept(MediaTypes.HAL_JSON)
                     .content(objectMapper.writeValueAsString(postDto)))
@@ -99,7 +110,8 @@ public class PostControllerTest {
     public void title이_비어있는_post() throws Exception {
 
         // Given
-        Account account = generateAccount();
+        Optional<Account> optionalAccount = accountRepository.findByEmail("user@email.com");
+        Account account = optionalAccount.get();
         Category category = generateCategory();
 
         PostDto postDto = PostDto.builder()
@@ -110,11 +122,12 @@ public class PostControllerTest {
                 .build();
 
         // When
-        userRepository.save(account); // user 등록
+        accountRepository.save(account); // user 등록
         categoryRepository.save(category); // category 등록
 
         // Then
         mockMvc.perform(post("/api/posts")
+                .header(HttpHeaders.AUTHORIZATION, getBearerToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaTypes.HAL_JSON)
                 .content(objectMapper.writeValueAsString(postDto)))
@@ -161,17 +174,18 @@ public class PostControllerTest {
     public void updatePost() throws Exception {
 
         // Given
-        Account account = generateAccount();
+        Optional<Account> optionalAccount = accountRepository.findByEmail("user@email.com");
+        Account account = optionalAccount.get();
         Category category = generateCategory();
+        categoryRepository.save(category);
 
         Post generatePost = generatePost(1, account, category);
-
         PostDto postDto = modelMapper.map(generatePost, PostDto.class);
-
         postDto.setContents("수정되었습니다.");
 
         // When & Then
         mockMvc.perform(put("/api/posts/{id}", generatePost.getId())
+                    .header(HttpHeaders.AUTHORIZATION, getBearerToken())
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .accept(MediaTypes.HAL_JSON)
                     .content(objectMapper.writeValueAsString(postDto)))
@@ -185,8 +199,10 @@ public class PostControllerTest {
     public void updatePost_404() throws Exception {
 
         // Given
-        Account account = generateAccount();
+        Optional<Account> optionalAccount = accountRepository.findByEmail("user@email.com");
+        Account account = optionalAccount.get();
         Category category = generateCategory();
+        categoryRepository.save(category);
 
         Post generatePost = generatePost(1, account, category);
         PostDto postDto = modelMapper.map(generatePost, PostDto.class);
@@ -194,6 +210,7 @@ public class PostControllerTest {
 
         // When & Then
         mockMvc.perform(put("/api/posts/404")
+                .header(HttpHeaders.AUTHORIZATION, getBearerToken())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaTypes.HAL_JSON)
                 .content(objectMapper.writeValueAsString(postDto)))
@@ -206,13 +223,16 @@ public class PostControllerTest {
     public void deletePost() throws Exception {
 
         // Given
-        Account account = generateAccount();
+        Optional<Account> optionalAccount = accountRepository.findByEmail("user@email.com");
+        Account account = optionalAccount.get();
         Category category = generateCategory();
+        categoryRepository.save(category);
 
         Post generatePost = generatePost(1, account, category);
 
         // When & Then
-        mockMvc.perform(delete("/api/posts/{id}", generatePost.getId()))
+        mockMvc.perform(delete("/api/posts/{id}", generatePost.getId())
+                    .header(HttpHeaders.AUTHORIZATION, getBearerToken()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
@@ -225,7 +245,8 @@ public class PostControllerTest {
         // Given
 
         // When & Then
-        mockMvc.perform(delete("/api/posts/404"))
+        mockMvc.perform(delete("/api/posts/404")
+                    .header(HttpHeaders.AUTHORIZATION, getBearerToken()))
                 .andDo(print())
                 .andExpect(status().isNotFound());
 
@@ -238,7 +259,7 @@ public class PostControllerTest {
         // Given
         Account account = generateAccount();
         Category category = generateCategory();
-        userRepository.save(account);
+        accountRepository.save(account);
         categoryRepository.save(category);
 
         for (int i = 0; i < 30; i++) {
@@ -257,12 +278,12 @@ public class PostControllerTest {
     @Test
     @TestDecription("catgory별 post list를 출력하는 테스트")
     public void 카페고리별_queryPosts() throws Exception {
-        
+
         // Given
         Account account = generateAccount();
         Category category1 = generateCategory();
         Category category2 = generateCategory2();
-        userRepository.save(account);
+        accountRepository.save(account);
         categoryRepository.save(category1);
         categoryRepository.save(category2);
 
@@ -280,9 +301,8 @@ public class PostControllerTest {
                 .param("size", "10")
                 .param("sort", "createdAt,DESC"))
                 .andDo(print());
-        
-    }
 
+    }
 
     private Post generatePost(int index, Account account, Category category) {
 
