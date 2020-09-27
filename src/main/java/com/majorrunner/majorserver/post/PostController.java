@@ -18,7 +18,6 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -128,7 +127,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}/views")
-    public void likes(@PathVariable Long id) {
+    public void views(@PathVariable Long id) {
         Post post = postService.findOne(id);
         post.incrementViews();
 

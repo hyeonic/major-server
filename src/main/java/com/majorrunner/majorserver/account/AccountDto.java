@@ -1,6 +1,9 @@
 package com.majorrunner.majorserver.account;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -8,6 +11,9 @@ import javax.validation.constraints.NotEmpty;
 public class AccountDto {
 
     @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CreateAccountRequest {
         @NotEmpty
         private String username;
@@ -15,44 +21,33 @@ public class AccountDto {
         private String password;
         @NotEmpty
         private String nickName;
-
-        public CreateAccountRequest(String username, String password, String nickName) {
-            this.username = username;
-            this.password = password;
-            this.nickName = nickName;
-        }
     }
 
     @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CreateAccountResponse {
         private String username;
         private String nickName;
-
-        public CreateAccountResponse(String username, String nickName) {
-            this.username = username;
-            this.nickName = nickName;
-        }
     }
 
     @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ReadAccountRequest {
         @NotEmpty
         private String username;
         @NotEmpty
         private String password;
-
-        public ReadAccountRequest(String username, String password) {
-            this.username = username;
-            this.password = password;
-        }
     }
 
     @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ReadAccountResponse {
         private String username;
-
-        public ReadAccountResponse(String username) {
-            this.username = username;
-        }
     }
 }
