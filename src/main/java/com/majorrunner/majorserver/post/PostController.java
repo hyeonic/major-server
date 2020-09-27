@@ -1,7 +1,12 @@
 package com.majorrunner.majorserver.post;
 
+import com.majorrunner.majorserver.Like.LikeRepository;
+import com.majorrunner.majorserver.account.AccountDto;
 import com.majorrunner.majorserver.category.Category;
 import com.majorrunner.majorserver.category.CategoryRepository;
+import com.majorrunner.majorserver.comment.Comment;
+import com.majorrunner.majorserver.comment.CommentDto;
+import com.majorrunner.majorserver.comment.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -28,6 +33,8 @@ public class PostController {
     private final PostRepository postRepository;
     private final PostService postService;
     private final CategoryRepository categoryRepository;
+    private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
 
     @PostMapping
     public ResponseEntity createPost(@RequestBody @Valid PostDto postDto) {
@@ -68,7 +75,7 @@ public class PostController {
 
         return ResponseEntity.ok().body(postDto);
     }
-    
+
     @GetMapping("/category/{id}")
     public ResponseEntity postsByCategory(@PathVariable Long id,
                                           Pageable pageable) {
@@ -87,7 +94,7 @@ public class PostController {
 
     @PutMapping("/{id}")
     public ResponseEntity updatePost(@PathVariable Long id, @RequestBody @Valid PostDto postDto) {
-        
+
         Post post = postService.findOne(id);
 
         if (post == null) {
@@ -122,6 +129,39 @@ public class PostController {
         post.incrementViews();
 
         postRepository.save(post);
+    }
+
+    @PostMapping("/{id}/comment")
+    public ResponseEntity createComment(@PathVariable Long id, @RequestBody CommentDto.CreateCommentRequest createCommentRequest) {
+
+        Post post = postService.findOne(id);
+
+        if (post == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Comment comment = Comment.createComment(createCommentRequest.getComment(), post);
+        Comment savedComment = commentRepository.save(comment);
+
+        post.addComment(savedComment);
+        Post updatedPost = postRepository.save(post);// comment를 더하고 다시 save
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/comment")
+    public ResponseEntity queryComment(@PathVariable Long id,
+                                       Pageable pageable) {
+
+        Post post = postService.findOne(id);
+
+        if (post == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Page<Comment> page = commentRepository.findByPost(post, pageable);
+
+        return ResponseEntity.ok(page);
     }
 
 }

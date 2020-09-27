@@ -32,7 +32,7 @@ public class AccountController {
         Account account = modelMapper.map(createAccountRequest, Account.class);
         Account savedAccount = accountService.saveAccount(account);
 
-        AccountDto.CreateAccountResponse createAccountResponse = modelMapper.map(savedAccount, AccountDto.CreateAccountResponse.class);
+        AccountDto.CreateAccountResponse createAccountResponse = new AccountDto.CreateAccountResponse(savedAccount.getUsername(), savedAccount.getNickName());
 
         return ResponseEntity.ok().body(createAccountResponse);
     }
