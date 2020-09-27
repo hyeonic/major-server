@@ -1,6 +1,8 @@
 package com.majorrunner.majorserver.post;
 
+import com.majorrunner.majorserver.Like.Like;
 import com.majorrunner.majorserver.Like.LikeRepository;
+import com.majorrunner.majorserver.account.Account;
 import com.majorrunner.majorserver.account.AccountDto;
 import com.majorrunner.majorserver.category.Category;
 import com.majorrunner.majorserver.category.CategoryRepository;
@@ -16,6 +18,7 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -162,6 +165,41 @@ public class PostController {
         List<Comment> comments = post.getComments();
 
         return ResponseEntity.ok(comments);
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity createLike(@PathVariable Long id, AccountDto.CreateAccountResponse accountInfo) {
+
+        Post post = postService.findOne(id);
+
+        Account account = modelMapper.map(accountInfo, Account.class);
+
+        if (post == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Like like = Like.createLike(post, account);
+        Like savedLike = likeRepository.save(like);
+
+        post.addLikes(savedLike);
+        Post updatedPost = postRepository.save(post);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{postId}/like/{likeId}")
+    public ResponseEntity deleteLike(@PathVariable Long postId, @PathVariable Long likeId) {
+
+        Optional<Like> optionalLike = likeRepository.findById(likeId);
+
+        if (!optionalLike.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Like like = optionalLike.get();
+        likeRepository.delete(like);
+
+        return ResponseEntity.noContent().build();
     }
 
 }
