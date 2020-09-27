@@ -26,4 +26,14 @@ public class CommentDto {
         }
     }
 
+    @Data
+    public static class UpdateCommentRequest {
+        @NotEmpty
+        private String comment;
+
+        public UpdateCommentRequest(String comment) {
+            this.comment = comment;
+        }
+    }
+
 }

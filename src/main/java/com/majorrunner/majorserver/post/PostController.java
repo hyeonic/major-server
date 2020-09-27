@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -150,8 +151,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}/comment")
-    public ResponseEntity queryComment(@PathVariable Long id,
-                                       Pageable pageable) {
+    public ResponseEntity queryComment(@PathVariable Long id) {
 
         Post post = postService.findOne(id);
 
@@ -159,9 +159,9 @@ public class PostController {
             return ResponseEntity.notFound().build();
         }
 
-        Page<Comment> page = commentRepository.findByPost(post, pageable);
+        List<Comment> comments = post.getComments();
 
-        return ResponseEntity.ok(page);
+        return ResponseEntity.ok(comments);
     }
 
 }

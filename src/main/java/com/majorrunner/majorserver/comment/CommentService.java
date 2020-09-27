@@ -13,10 +13,14 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
-    /** comment update */
+    /** comment 수정 */
     @Transactional
-    public void updateComment(Comment comment) {
-        comment.setUpdatedAt(LocalDateTime.now());
-        Comment updatedComment = commentRepository.save(comment);
+    public void updateComment(Comment updateComment, Comment updatedComment) { // updated에 있는 내용을 update에 넣어준다.
+
+        // comment값 수정
+        updateComment.setComment(updatedComment.getComment());
+
+        updateComment.setUpdatedAt(LocalDateTime.now());
+        commentRepository.save(updateComment);
     }
 }
