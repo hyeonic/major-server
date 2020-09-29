@@ -4,6 +4,7 @@ import com.majorrunner.majorserver.Like.Like;
 import com.majorrunner.majorserver.Like.LikeRepository;
 import com.majorrunner.majorserver.account.Account;
 import com.majorrunner.majorserver.account.AccountDto;
+import com.majorrunner.majorserver.account.AccountRepository;
 import com.majorrunner.majorserver.category.Category;
 import com.majorrunner.majorserver.category.CategoryRepository;
 import com.majorrunner.majorserver.comment.Comment;
@@ -38,16 +39,28 @@ public class PostController {
     private final CategoryRepository categoryRepository;
     private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
+    private final AccountRepository accountRepository;
 
     @PostMapping
     public ResponseEntity createPost(@RequestBody @Valid PostDto postDto) {
 
         Post post = modelMapper.map(postDto, Post.class);
+        String username = post.getAccount().getUsername();
+        Optional<Account> optionalAccount = accountRepository.findByUsername(username);
+
+        if (!optionalAccount.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Account account = optionalAccount.get();
+        post.setAccount(account);
 
         postService.add(post);
 
         ControllerLinkBuilder selfLinkBuilder = linkTo(PostController.class).slash(post.getId());
         URI createdUri = selfLinkBuilder.toUri();
+
+        post.setAccount(postDto.getAccount());
 
         return ResponseEntity.created(createdUri).body(post);
     }

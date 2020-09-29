@@ -33,4 +33,20 @@ public class AccountController {
 
         return ResponseEntity.ok().body(createAccountResponse);
     }
+
+    @GetMapping("/username/{username}")
+    public ResponseEntity getAccount(@PathVariable String username) {
+        Optional<Account> optionalAccount = accountRepository.findByUsername(username);
+
+        if (!optionalAccount.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Account account = optionalAccount.get();
+        AccountDto.CreateAccountResponse createAccountResponse =
+                new AccountDto.CreateAccountResponse(account.getUsername(), account.getNickName());
+
+
+        return ResponseEntity.ok(createAccountResponse);
+    }
 }
