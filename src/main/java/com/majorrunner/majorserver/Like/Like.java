@@ -1,5 +1,6 @@
 package com.majorrunner.majorserver.Like;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.majorrunner.majorserver.account.Account;
 import com.majorrunner.majorserver.post.Post;
 import lombok.AccessLevel;
@@ -22,10 +23,12 @@ public class Like {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
+    @JsonIgnore
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
+    @JsonIgnore
     private Account account;
 
     private LocalDateTime createAt;

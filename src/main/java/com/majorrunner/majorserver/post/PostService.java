@@ -28,7 +28,7 @@ public class PostService {
 
     /** post 수정 */
     @Transactional
-    public void update(PostDto postDto, Post post) {
+    public void update(PostDto.CreatePostRequest postDto, Post post) {
 
         post.updatePost(postDto, post);
         postRepository.save(post);
@@ -55,12 +55,12 @@ public class PostService {
 
         Optional<Post> optionalPost = postRepository.findById(postId);
 
-        if (optionalPost.isPresent()) {
-            return postRepository.getOne(postId);
-        }else {
+        if (!optionalPost.isPresent()) {
             return null;
         }
 
+        Post post = optionalPost.get();
+        return post;
     }
 
     /** 좋아요 수 */

@@ -42,12 +42,4 @@ public class AccountDto {
         @NotEmpty
         private String password;
     }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ReadAccountResponse {
-        private String username;
-    }
 }

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,10 +43,12 @@ public class PostController {
     private final AccountRepository accountRepository;
 
     @PostMapping
-    public ResponseEntity createPost(@RequestBody @Valid PostDto postDto) {
+    public ResponseEntity createPost(@RequestBody @Valid PostDto.CreatePostRequest postDto) {
 
         Post post = modelMapper.map(postDto, Post.class);
-        String username = post.getAccount().getUsername();
+        post.setCreatedAt(LocalDateTime.now());
+        post.setUpdatedAt(LocalDateTime.now());
+        String username = postDto.getAccount().getUsername();
         Optional<Account> optionalAccount = accountRepository.findByUsername(username);
 
         if (!optionalAccount.isPresent()) {
@@ -60,9 +63,9 @@ public class PostController {
         ControllerLinkBuilder selfLinkBuilder = linkTo(PostController.class).slash(post.getId());
         URI createdUri = selfLinkBuilder.toUri();
 
-        post.setAccount(postDto.getAccount());
+        PostDto.ReadPostResponse postResponse = new PostDto.ReadPostResponse(post);
 
-        return ResponseEntity.created(createdUri).body(post);
+        return ResponseEntity.created(createdUri).body(postResponse);
     }
 
     @GetMapping
@@ -84,12 +87,12 @@ public class PostController {
             return ResponseEntity.notFound().build();
         }
 
-        PostDto postDto = modelMapper.map(post, PostDto.class);
-
         ControllerLinkBuilder selfLinkBuilder = linkTo(PostController.class).slash(post.getId());
         URI createdUri = selfLinkBuilder.toUri();
 
-        return ResponseEntity.ok().body(postDto);
+        PostDto.ReadPostResponse postResponse = new PostDto.ReadPostResponse(post);
+
+        return ResponseEntity.ok().body(postResponse);
     }
 
     @GetMapping("/category/{id}")
@@ -109,7 +112,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updatePost(@PathVariable Long id, @RequestBody @Valid PostDto postDto) {
+    public ResponseEntity updatePost(@PathVariable Long id, @RequestBody @Valid PostDto.CreatePostRequest postDto) {
 
         Post post = postService.findOne(id);
 

@@ -84,7 +84,7 @@ public class PostControllerTest {
         Account account = optionalAccount.get();
         Category category = generateCategory();
 
-        PostDto postDto = PostDto.builder()
+        PostDto.CreatePostRequest postDto = PostDto.CreatePostRequest.builder()
                 .title("post test")
                 .contents("post test를 위한 contents입니다. ")
                 .commentStatus(CommentStatus.SHOW)
@@ -114,7 +114,7 @@ public class PostControllerTest {
         Account account = optionalAccount.get();
         Category category = generateCategory();
 
-        PostDto postDto = PostDto.builder()
+        PostDto.CreatePostRequest postDto = PostDto.CreatePostRequest.builder()
                 .contents("post test를 위한 contents입니다. ")
                 .commentStatus(CommentStatus.SHOW)
                 .account(account)
@@ -180,7 +180,7 @@ public class PostControllerTest {
         categoryRepository.save(category);
 
         Post generatePost = generatePost(1, account, category);
-        PostDto postDto = modelMapper.map(generatePost, PostDto.class);
+        PostDto.CreatePostRequest postDto = modelMapper.map(generatePost, PostDto.CreatePostRequest.class);
         postDto.setContents("수정되었습니다.");
 
         // When & Then
@@ -205,7 +205,7 @@ public class PostControllerTest {
         categoryRepository.save(category);
 
         Post generatePost = generatePost(1, account, category);
-        PostDto postDto = modelMapper.map(generatePost, PostDto.class);
+        PostDto.CreatePostRequest postDto = modelMapper.map(generatePost, PostDto.CreatePostRequest.class);
         postDto.setContents("수정되었습니다.");
 
         // When & Then

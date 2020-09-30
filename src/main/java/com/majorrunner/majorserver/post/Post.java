@@ -32,10 +32,12 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
+    @JsonIgnore
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
+    @JsonIgnore
     private Category category;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
@@ -83,13 +85,11 @@ public class Post {
     }
 
     // == 비즈니스 로직 == //
-    public Post updatePost(PostDto postDto, Post post) {
+    public Post updatePost(PostDto.CreatePostRequest postDto, Post post) {
         post.setTitle(postDto.getTitle());
         post.setContents(postDto.getContents());
         post.setStatus(postDto.getCommentStatus());
         post.setCategory(postDto.getCategory());
-        post.setComments(postDto.getComments());
-        post.setLikes(postDto.getLikes());
 
         post.setUpdatedAt(LocalDateTime.now());
 
