@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -146,7 +147,6 @@ public class PostController {
     public void views(@PathVariable Long id) {
         Post post = postService.findOne(id);
         post.incrementViews();
-
         postRepository.save(post);
     }
 
@@ -154,15 +154,20 @@ public class PostController {
     public ResponseEntity createComment(@PathVariable Long id, @RequestBody CommentDto.CreateCommentRequest createCommentRequest) {
 
         Post post = postService.findOne(id);
+        Optional<Account> optionalAccount = accountRepository.findByUsername(createCommentRequest.getAccount().getUsername());
 
-        if (post == null) {
+        if (post == null || !optionalAccount.isPresent()) {
             return ResponseEntity.notFound().build();
         }
+
+        Account account = optionalAccount.get();
 
         Comment comment = Comment.createComment(createCommentRequest.getComment(), post);
         Comment savedComment = commentRepository.save(comment);
 
+        account.addComment(comment);
         post.addComment(savedComment);
+
         Post updatedPost = postRepository.save(post);// comment를 더하고 다시 save
 
         return ResponseEntity.ok().build();
@@ -178,20 +183,27 @@ public class PostController {
         }
 
         List<Comment> comments = post.getComments();
+        List<CommentDto.QueryCommentResponse> responseComments = new ArrayList<>();
 
-        return ResponseEntity.ok(comments);
+        for (Comment comment : comments) {
+            CommentDto.QueryCommentResponse queryCommentResponse = new CommentDto.QueryCommentResponse(comment);
+            responseComments.add(queryCommentResponse);
+        }
+
+        return ResponseEntity.ok(responseComments);
     }
 
     @PostMapping("/{id}/like")
     public ResponseEntity createLike(@PathVariable Long id, AccountDto.CreateAccountResponse accountInfo) {
 
         Post post = postService.findOne(id);
+        Optional<Account> optionalAccount = accountRepository.findByUsername(accountInfo.getUsername());
 
-        Account account = modelMapper.map(accountInfo, Account.class);
-
-        if (post == null) {
+        if (post == null || !optionalAccount.isPresent()) {
             return ResponseEntity.notFound().build();
         }
+
+        Account account = optionalAccount.get();
 
         Like like = Like.createLike(post, account);
         Like savedLike = likeRepository.save(like);
@@ -202,17 +214,32 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{postId}/like/{likeId}")
-    public ResponseEntity deleteLike(@PathVariable Long postId, @PathVariable Long likeId) {
+    @DeleteMapping("/{postId}/like/{username}")
+    public ResponseEntity deleteLike(@PathVariable(name = "postId") Long postId,
+                                     @PathVariable(name = "username") String username) {
 
-        Optional<Like> optionalLike = likeRepository.findById(likeId);
+        Optional<Post> optionalPost = postRepository.findById(postId);
 
-        if (!optionalLike.isPresent()) {
+        if (!optionalPost.isPresent()) {
             return ResponseEntity.notFound().build();
         }
 
-        Like like = optionalLike.get();
-        likeRepository.delete(like);
+        Post post = optionalPost.get();
+
+        List<Like> likes = likeRepository.findByPost(post);
+
+        if (!likes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Like deletedLike;
+
+        for (Like like : likes) {
+            if (like.getAccount().getUsername().equals(username)) {
+                deletedLike = like;
+                likeRepository.delete(deletedLike);
+            }
+        }
 
         return ResponseEntity.noContent().build();
     }

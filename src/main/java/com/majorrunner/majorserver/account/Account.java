@@ -2,6 +2,7 @@ package com.majorrunner.majorserver.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.majorrunner.majorserver.Like.Like;
+import com.majorrunner.majorserver.comment.Comment;
 import com.majorrunner.majorserver.post.Post;
 import com.majorrunner.majorserver.accoutInfo.AccountInfo;
 import lombok.AccessLevel;
@@ -44,12 +45,21 @@ public class Account {
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @JsonIgnore
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Like> likes = new ArrayList<>();
 
     // == 연관관계 메서드 == //
     public void addPost(Post post) {
         posts.add(post);
         post.setAccount(this);
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setAccount(this);
     }
 
     public void addLike(Like like) {

@@ -105,6 +105,6 @@ public class Post {
     }
 
     public void incrementViews() {
-        views += views;
+        views = views + 1;
     }
 }
