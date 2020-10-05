@@ -38,12 +38,14 @@ public class CommentDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class QueryCommentResponse {
+        private Long id;
         private String comment;
         private AccountDto.CreateAccountResponse account;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
         public QueryCommentResponse(Comment comment) {
+            this.id = comment.getId();
             this.comment = comment.getComment();
 
             Account account = comment.getAccount();

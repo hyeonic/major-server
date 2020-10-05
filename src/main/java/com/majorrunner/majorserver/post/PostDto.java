@@ -13,6 +13,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,8 @@ public class PostDto {
         private CategoryDto.ReadCategoryResponse category;
         private List<CommentDto.CreateCommentResponse> comments = new ArrayList<>();
         private List<LikeDto.ReadLikeResponse> likes = new ArrayList<>();
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
 
         public ReadPostResponse(Post post) {
             this.title = post.getTitle();
@@ -71,6 +74,8 @@ public class PostDto {
                 this.likes.add(readLikeResponse);
             }
 
+            this.createdAt = post.getCreatedAt();
+            this.updatedAt = post.getUpdatedAt();
         }
     }
 

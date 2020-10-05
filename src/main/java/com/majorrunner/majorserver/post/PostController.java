@@ -194,7 +194,8 @@ public class PostController {
     }
 
     @PostMapping("/{id}/like")
-    public ResponseEntity createLike(@PathVariable Long id, AccountDto.CreateAccountResponse accountInfo) {
+    public ResponseEntity createLike(@PathVariable Long id,
+                                     @RequestBody AccountDto.CreateAccountResponse accountInfo) {
 
         Post post = postService.findOne(id);
         Optional<Account> optionalAccount = accountRepository.findByUsername(accountInfo.getUsername());
@@ -214,9 +215,9 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{postId}/like/{username}")
+    @DeleteMapping("/{postId}/like/{nickName}")
     public ResponseEntity deleteLike(@PathVariable(name = "postId") Long postId,
-                                     @PathVariable(name = "username") String username) {
+                                     @PathVariable(name = "nickName") String nickName) {
 
         Optional<Post> optionalPost = postRepository.findById(postId);
 
@@ -228,14 +229,14 @@ public class PostController {
 
         List<Like> likes = likeRepository.findByPost(post);
 
-        if (!likes.isEmpty()) {
+        if (likes.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         Like deletedLike;
 
         for (Like like : likes) {
-            if (like.getAccount().getUsername().equals(username)) {
+            if (like.getAccount().getNickName().equals(nickName)) {
                 deletedLike = like;
                 likeRepository.delete(deletedLike);
             }

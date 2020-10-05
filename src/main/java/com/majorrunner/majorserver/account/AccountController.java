@@ -26,10 +26,17 @@ public class AccountController {
             return ResponseEntity.badRequest().build();
         }
 
+        Optional<Account> optionalAccount2 = accountRepository.findByNickName(createAccountRequest.getNickName());
+
+        if (optionalAccount2.isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         Account account = modelMapper.map(createAccountRequest, Account.class);
         Account savedAccount = accountService.saveAccount(account);
 
-        AccountDto.CreateAccountResponse createAccountResponse = new AccountDto.CreateAccountResponse(savedAccount.getUsername(), savedAccount.getNickName());
+        AccountDto.CreateAccountResponse createAccountResponse =
+                new AccountDto.CreateAccountResponse(savedAccount.getUsername(), savedAccount.getNickName());
 
         return ResponseEntity.ok().body(createAccountResponse);
     }
