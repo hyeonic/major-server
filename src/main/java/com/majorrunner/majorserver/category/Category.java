@@ -14,7 +14,7 @@ import java.util.List;
 //@Builder
 public class Category {
 
-    @Id @GeneratedValue
+    @Id
     @Column(name = "category_id")
     private Long id;
 

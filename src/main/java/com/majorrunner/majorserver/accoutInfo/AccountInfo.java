@@ -34,7 +34,7 @@ public class AccountInfo {
 
     // == 생성 메서드 == //
     // 정적 팩토리 메서드
-    public static AccountInfo createUserInfo(Account account, Category... categories) {
+    public static AccountInfo createUserInfo(Account account, List<Category> categories) {
         AccountInfo accountInfo = new AccountInfo();
         accountInfo.setAccount(account);
         for (Category category : categories) {
