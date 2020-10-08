@@ -49,7 +49,8 @@ public class CommentDto {
             this.comment = comment.getComment();
 
             Account account = comment.getAccount();
-            this.account = new AccountDto.CreateAccountResponse(account.getUsername(), account.getNickName());
+            this.account = new AccountDto.CreateAccountResponse(account.getUsername(), account.getNickName(),
+                    account.getCreatedAt(), account.getUpdatedAt());
 
             this.createdAt = comment.getCreatedAt();
             this.updatedAt = comment.getUpdatedAt();

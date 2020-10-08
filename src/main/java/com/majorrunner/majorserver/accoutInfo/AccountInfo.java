@@ -1,6 +1,7 @@
 package com.majorrunner.majorserver.accoutInfo;
 
 import com.majorrunner.majorserver.account.Account;
+import com.majorrunner.majorserver.accountInfoCategory.AccountInfoCategory;
 import com.majorrunner.majorserver.category.Category;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,22 +25,20 @@ public class AccountInfo {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany
-    private List<Category> categories = new ArrayList<>();
+    @OneToMany(mappedBy = "accountInfo", cascade = CascadeType.ALL)
+    private List<AccountInfoCategory> accountInfoCategories = new ArrayList<>();
 
     // == 연관관계 메서드 == //
-    public void addCategory(Category category) {
-        categories.add(category);
+    public void addCategory(AccountInfoCategory accountInfoCategory) {
+        accountInfoCategories.add(accountInfoCategory);
+        accountInfoCategory.setAccountInfo(this);
     }
 
     // == 생성 메서드 == //
     // 정적 팩토리 메서드
-    public static AccountInfo createUserInfo(Account account, List<Category> categories) {
+    public static AccountInfo createUserInfo(Account account) {
         AccountInfo accountInfo = new AccountInfo();
         accountInfo.setAccount(account);
-        for (Category category : categories) {
-           accountInfo.addCategory(category);
-        }
 
         return accountInfo;
     }

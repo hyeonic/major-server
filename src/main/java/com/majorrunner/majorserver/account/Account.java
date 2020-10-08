@@ -2,7 +2,6 @@ package com.majorrunner.majorserver.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.majorrunner.majorserver.Like.Like;
-import com.majorrunner.majorserver.category.Category;
 import com.majorrunner.majorserver.comment.Comment;
 import com.majorrunner.majorserver.post.Post;
 import com.majorrunner.majorserver.accoutInfo.AccountInfo;
@@ -41,6 +40,7 @@ public class Account {
     private Set<AccountRole> roles;
 
     @OneToOne(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private AccountInfo accountInfo;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)

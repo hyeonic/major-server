@@ -13,6 +13,7 @@ public class CategoryDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ReadCategoryResponse {
+        private Long id;
         private String categoryName;
         private String subCategoryName;
     }

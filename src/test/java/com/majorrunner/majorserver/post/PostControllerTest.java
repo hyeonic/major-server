@@ -326,13 +326,13 @@ public class PostControllerTest {
     }
 
     private Category generateCategory() {
-        Category category = new Category("전공", "it");
+        Category category = new Category(1L,"전공", "it");
 
         return category;
     }
 
     private Category generateCategory2() {
-        Category category = new Category("전공", "소프트웨어");
+        Category category = new Category(2L,"전공", "소프트웨어");
 
         return category;
     }

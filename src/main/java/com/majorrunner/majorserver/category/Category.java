@@ -1,6 +1,7 @@
 package com.majorrunner.majorserver.category;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.majorrunner.majorserver.accountInfoCategory.AccountInfoCategory;
 import com.majorrunner.majorserver.post.Post;
 import lombok.Getter;
 

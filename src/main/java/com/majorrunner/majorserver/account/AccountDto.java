@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 
 @Data
 public class AccountDto {
@@ -30,6 +31,8 @@ public class AccountDto {
     public static class CreateAccountResponse {
         private String username;
         private String nickName;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
 
     @Data

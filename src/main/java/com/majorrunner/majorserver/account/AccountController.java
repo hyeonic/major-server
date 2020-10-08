@@ -36,7 +36,8 @@ public class AccountController {
         Account savedAccount = accountService.saveAccount(account);
 
         AccountDto.CreateAccountResponse createAccountResponse =
-                new AccountDto.CreateAccountResponse(savedAccount.getUsername(), savedAccount.getNickName());
+                new AccountDto.CreateAccountResponse(savedAccount.getUsername(),
+                        savedAccount.getNickName(), savedAccount.getCreatedAt(), savedAccount.getUpdatedAt());
 
         return ResponseEntity.ok().body(createAccountResponse);
     }
@@ -51,7 +52,8 @@ public class AccountController {
 
         Account account = optionalAccount.get();
         AccountDto.CreateAccountResponse createAccountResponse =
-                new AccountDto.CreateAccountResponse(account.getUsername(), account.getNickName());
+                new AccountDto.CreateAccountResponse(account.getUsername(), account.getNickName(),
+                        account.getCreatedAt(), account.getUpdatedAt());
 
 
         return ResponseEntity.ok(createAccountResponse);

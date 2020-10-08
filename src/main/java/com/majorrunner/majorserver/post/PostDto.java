@@ -58,9 +58,11 @@ public class PostDto {
             this.commentStatus = post.getStatus();
 
             Account account = post.getAccount();
-            this.account = new AccountDto.CreateAccountResponse(account.getUsername(), account.getNickName());
+            this.account = new AccountDto.CreateAccountResponse(account.getUsername(), account.getNickName(),
+                    account.getCreatedAt(), account.getUpdatedAt());
             Category category = post.getCategory();
-            this.category = new CategoryDto.ReadCategoryResponse(category.getCategoryName(), category.getSubCategoryName());
+            this.category = new CategoryDto.ReadCategoryResponse(category.getId(), category.getCategoryName(),
+                    category.getSubCategoryName());
 
             List<Comment> comments = post.getComments();
             for (Comment comment : comments) {
