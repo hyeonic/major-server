@@ -61,6 +61,42 @@
 
  ------
 
+## 폴더 구조
+
+```
+
+major-server
+ ├─ README.md
+ ├─ pom.xml
+ ├─ src
+ │  ├─ main
+ │  │  ├─ java
+ │  │  │   ├─ com.majorrunner.majorserver 
+ │  │  │   │   ├─ account
+ │  │  │   │   ├─ accountInfoCategory
+ │  │  │   │   ├─ accountInfo
+ │  │  │   │   ├─ category
+ │  │  │   │   ├─ comment
+ │  │  │   │   ├─ like
+ │  │  │   │   ├─ post
+ │  │  │   │   ├─ common
+ │  │  │   │   └─ config
+ │  │  │   └─ MajorServerApplication.java
+ │  │  └─ resources
+ │  │      ├─ static
+ │  │      ├─ templates
+ │  │      └─ application.properties
+ │  └─ test                                 // test code 
+ │     ├─ java
+ │     │   └─ com.majorrunner.majorserver
+ │     │       ├─ post      
+ │     │       └─ ...
+ │     └─ resources
+ │         └─ application.properties
+ ├─ target
+ └─ ...
+```
+
 
 
 ## Docker
@@ -164,49 +200,34 @@ docker stop [컨테이너 id 또는 name]
 
 
  **User 기능**
-
-- [ ] 회원 가입 
-
-- [ ]    회원 탈퇴 
-
-- [ ]    회원 정보 수정
-
  
+- [x] 회원 가입 
+- [x] 회원 조회
+- [x] 회원 탈퇴 
+- [x] 회원 정보 수정
 
  **UserInfo 기능**  
  
-- [ ]    userinfo 생성 
-
-- [ ]    userinfo 수정 
-
- 
+- [x] userinfo 생성 
+- [x] userinfo 삭제 
 
  **Post 기능**
 
-- [ ]    post 생성 
-
-- [ ]    post 수정 
-
-- [ ]     post 삭제 
-
-- [ ]    post 조회 
-- [ ]    좋아요 수  
-
-- [ ]    comment 추가 및 삭제 
-- [ ]     comment 상태 변경 (SHOW or HIDE) 
-
- 
+- [x] post 생성 
+- [x] post 수정 
+- [x] post 삭제 
+- [x] post 조회 
+- [x] post paging 조회
+- [x] 좋아요 기능
+- [x] 조회수 증가
+- [x] comment 추가
 
  **Comment 기능**
-
-- [ ]     comment 생성
-
-- [ ]    comment 수정 
-
  
+- [x] comment 수정
+- [x] comment 삭제
 
  **Like 기능**
-
-- [ ]    like 생성 
-
-- [ ]     like 삭제 
+ 
+- [x] like 생성 
+- [x] like 삭제 

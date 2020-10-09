@@ -10,6 +10,7 @@ import com.majorrunner.majorserver.category.CategoryRepository;
 import com.majorrunner.majorserver.comment.Comment;
 import com.majorrunner.majorserver.comment.CommentDto;
 import com.majorrunner.majorserver.comment.CommentRepository;
+import com.majorrunner.majorserver.common.ErrorResource;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -44,7 +46,11 @@ public class PostController {
     private final AccountRepository accountRepository;
 
     @PostMapping
-    public ResponseEntity createPost(@RequestBody @Valid PostDto.CreatePostRequest postDto) {
+    public ResponseEntity createPost(@RequestBody @Valid PostDto.CreatePostRequest postDto, Errors errors) {
+
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(new ErrorResource(errors));
+        }
 
         Post post = modelMapper.map(postDto, Post.class);
         post.setCreatedAt(LocalDateTime.now());
@@ -69,11 +75,17 @@ public class PostController {
         return ResponseEntity.created(createdUri).body(postResponse);
     }
 
-    @GetMapping
-    public ResponseEntity queryPosts(Pageable pageable,
+    @GetMapping("/search/{title}")
+    public ResponseEntity searchPosts(@PathVariable String title,
+                                     Pageable pageable,
                                      PagedResourcesAssembler<Post> assembler) {
 
-        Page<Post> page = postRepository.findAll(pageable);
+        Page<Post> page = postRepository.findByTitleContaining(title, pageable);
+
+        if (page.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
         PagedResources<PostResource> pagedResources = assembler.toResource(page, e -> new PostResource(e));
 
         return ResponseEntity.ok().body(pagedResources);
@@ -168,7 +180,7 @@ public class PostController {
         account.addComment(comment);
         post.addComment(savedComment);
 
-        Post updatedPost = postRepository.save(post);// comment를 더하고 다시 save
+        postRepository.save(post);// comment를 더하고 다시 save
 
         return ResponseEntity.ok().build();
     }
